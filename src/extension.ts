@@ -239,7 +239,6 @@ function registerFileWatchers(disposables: vscode.Disposable[]): void {
     try {
       const doc = await vscode.workspace.openTextDocument(uri);
       await indexer.indexDocument(doc);
-      await resolver.resolveAll();
       decorationProvider.refreshAllEditors();
       treeProvider.refresh();
     } catch (err) {
@@ -356,10 +355,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   context.subscriptions.push(...disposables);
 
-  // Initial index — do it after everything is registered
-  if (workspaceFolder) {
-    await reindex();
-  }
+  // Defer initial index to avoid blocking extension host startup
+  setTimeout(() => {
+    reindex().catch(err => console.error('[Design Trace] Initial index failed:', err));
+  }, 500);
 
   console.log('[Design Trace] Extension activated.');
 }

@@ -51,11 +51,16 @@ class JavaSymbolResolver {
             byClass.set(entry.className, list);
         }
         let resolved = 0;
-        for (const [className, symbols] of byClass) {
-            const locations = await this.findSymbolLocations(className, symbols);
-            for (const [symbol, location] of locations) {
-                this.registry.resolveSymbol(symbol, location);
-                resolved++;
+        const classes = Array.from(byClass.entries());
+        // Process classes in chunks of 5 to avoid blocking extension host
+        for (let i = 0; i < classes.length; i += 5) {
+            const chunk = classes.slice(i, i + 5);
+            const results = await Promise.all(chunk.map(([className, symbols]) => this.findSymbolLocations(className, symbols)));
+            for (const locations of results) {
+                for (const [symbol, location] of locations) {
+                    this.registry.resolveSymbol(symbol, location);
+                    resolved++;
+                }
             }
         }
         if (progress && resolved > 0) {
@@ -85,28 +90,7 @@ class JavaSymbolResolver {
         return resolutions.size;
     }
     async getClassNameFromDocument(doc) {
-        try {
-            const symbols = await vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', doc.uri);
-            if (!symbols)
-                return undefined;
-            return this.findTopLevelClass(symbols)?.name;
-        }
-        catch {
-            return this.findClassNameByRegex(doc.getText());
-        }
-    }
-    findTopLevelClass(symbols) {
-        for (const sym of symbols) {
-            if (sym.kind === vscode.SymbolKind.Class ||
-                sym.kind === vscode.SymbolKind.Interface ||
-                sym.kind === vscode.SymbolKind.Enum) {
-                return sym;
-            }
-            const found = this.findTopLevelClass(sym.children);
-            if (found)
-                return found;
-        }
-        return undefined;
+        return this.findClassNameByRegex(doc.getText());
     }
     findClassNameByRegex(text) {
         // Match class/interface/enum/record declarations, handling modifiers

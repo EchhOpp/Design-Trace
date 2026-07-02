@@ -31,12 +31,19 @@ export class JavaSymbolResolver {
     }
 
     let resolved = 0;
+    const classes = Array.from(byClass.entries());
 
-    for (const [className, symbols] of byClass) {
-      const locations = await this.findSymbolLocations(className, symbols);
-      for (const [symbol, location] of locations) {
-        this.registry.resolveSymbol(symbol, location);
-        resolved++;
+    // Process classes in chunks of 5 to avoid blocking extension host
+    for (let i = 0; i < classes.length; i += 5) {
+      const chunk = classes.slice(i, i + 5);
+      const results = await Promise.all(
+        chunk.map(([className, symbols]) => this.findSymbolLocations(className, symbols))
+      );
+      for (const locations of results) {
+        for (const [symbol, location] of locations) {
+          this.registry.resolveSymbol(symbol, location);
+          resolved++;
+        }
       }
     }
 
@@ -74,29 +81,7 @@ export class JavaSymbolResolver {
   }
 
   private async getClassNameFromDocument(doc: vscode.TextDocument): Promise<string | undefined> {
-    try {
-      const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
-        'vscode.executeDocumentSymbolProvider',
-        doc.uri
-      );
-      if (!symbols) return undefined;
-      return this.findTopLevelClass(symbols)?.name;
-    } catch {
-      return this.findClassNameByRegex(doc.getText());
-    }
-  }
-
-  private findTopLevelClass(symbols: vscode.DocumentSymbol[]): vscode.DocumentSymbol | undefined {
-    for (const sym of symbols) {
-      if (sym.kind === vscode.SymbolKind.Class ||
-          sym.kind === vscode.SymbolKind.Interface ||
-          sym.kind === vscode.SymbolKind.Enum) {
-        return sym;
-      }
-      const found = this.findTopLevelClass(sym.children);
-      if (found) return found;
-    }
-    return undefined;
+    return this.findClassNameByRegex(doc.getText());
   }
 
   private findClassNameByRegex(text: string): string | undefined {

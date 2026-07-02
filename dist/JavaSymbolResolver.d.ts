@@ -6,7 +6,6 @@ export declare class JavaSymbolResolver {
     resolveAll(progress?: (msg: string) => void): Promise<number>;
     resolveFile(uri: vscode.Uri): Promise<number>;
     private getClassNameFromDocument;
-    private findTopLevelClass;
     private findClassNameByRegex;
     private findSymbolLocations;
     private getLocationsFromFile;
