@@ -1,0 +1,174 @@
+{
+  "name": "design-trace",
+  "displayName": "Design Trace",
+  "description": "Bidirectional traceability between Internal Design Markdown and Java source code",
+  "version": "0.1.0",
+  "publisher": "design-trace",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/design-trace/design-trace"
+  },
+  "engines": {
+    "vscode": "^1.88.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Documentation"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*.md",
+    "workspaceContains:**/*.java",
+    "onCommand:design-trace.openPanel",
+    "onCommand:design-trace.reindex"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Design Trace",
+      "properties": {
+        "design-trace.mdPatterns": {
+          "type": "array",
+          "default": ["**/*.md"],
+          "description": "Glob patterns for Markdown files to index"
+        },
+        "design-trace.javaPatterns": {
+          "type": "array",
+          "default": ["**/*.java"],
+          "description": "Glob patterns for Java files to scan"
+        },
+        "design-trace.markerTag": {
+          "type": "string",
+          "default": "symbol:",
+          "description": "Tag used to mark symbols in Markdown (e.g. 'symbol:' or '@trace:')"
+        },
+        "design-trace.ignoredSymbols": {
+          "type": "array",
+          "default": [],
+          "description": "Symbols to ignore during indexing"
+        },
+        "design-trace.autoIndex": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically re-index when files change"
+        },
+        "design-trace.showGutterIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show green gutter icon for mapped Java methods"
+        },
+        "design-trace.showCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CodeLens reference links in Java files"
+        },
+        "design-trace.showHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show hover tooltip for mapped symbols"
+        },
+        "design-trace.iconTheme": {
+          "type": "string",
+          "default": "dot",
+          "description": "Gutter icon style: 'dot' or 'icon'"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "design-trace.reindex",
+        "title": "Design Trace: Re-index",
+        "category": "Design Trace"
+      },
+      {
+        "command": "design-trace.openPanel",
+        "title": "Design Trace: Open Panel",
+        "category": "Design Trace"
+      },
+      {
+        "command": "design-trace.linkCurrent",
+        "title": "Design Trace: Link Current File",
+        "category": "Design Trace"
+      },
+      {
+        "command": "design-trace.openMdFromSymbol",
+        "title": "Design Trace: Open Internal Design",
+        "category": "Design Trace"
+      },
+      {
+        "command": "design-trace.copySymbol",
+        "title": "Design Trace: Copy Symbol",
+        "category": "Design Trace"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "design-trace.linkCurrent",
+          "when": "editorTextFocus && editorLangId == java",
+          "group": "navigation@1"
+        },
+        {
+          "command": "design-trace.copySymbol",
+          "when": "editorTextFocus && editorLangId == java",
+          "group": "navigation@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "design-trace.openMdFromSymbol",
+          "when": "editorTextFocus && editorLangId == java"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "design-trace-view-container",
+          "title": "Design Trace",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "design-trace-view-container": [
+        {
+          "id": "design-trace-explorer",
+          "type": "tree",
+          "name": "Internal Design",
+          "initialSize": 5
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "design-trace.openPanel",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "editorTextFocus",
+        "description": "Open Design Trace panel"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -p ./ -w",
+    "test": "node ./out/test/runTest.js",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/vscode": "^1.88.0",
+    "@types/glob": "^8.1.0",
+    "@vscode/test-electron": "^2.3.9",
+    "@vscode/vsce": "^2.26.1",
+    "glob": "^10.3.10",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.1",
+    "ts-loader": "^9.5.1",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0"
+  }
+}
