@@ -6,7 +6,7 @@
   "publisher": "design-trace",
   "repository": {
     "type": "git",
-    "url": "https://github.com/design-trace/design-trace"
+    "url": "https://github.com/EchhOpp/Design-Trace"
   },
   "engines": {
     "vscode": "^1.88.0"
