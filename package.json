@@ -136,7 +136,8 @@
           "id": "design-trace-explorer",
           "type": "tree",
           "name": "Internal Design",
-          "initialSize": 5
+          "initialSize": 5,
+          "emptyMessage": "No symbols indexed yet. Open a Markdown design doc or run 'Design Trace: Index Design Documents'."
         }
       ]
     },

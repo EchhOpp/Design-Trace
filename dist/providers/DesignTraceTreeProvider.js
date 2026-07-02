@@ -89,12 +89,7 @@ class DesignTraceTreeProvider {
     buildRootNodes() {
         const allEntries = this.registry.all;
         if (allEntries.length === 0) {
-            return [{
-                    id: 'no-data',
-                    label: 'No symbols indexed yet',
-                    type: 'root',
-                    icon: 'info',
-                }];
+            return []; // Return empty — TreeDataProvider handles empty roots gracefully
         }
         // Group by Markdown file
         const byFile = new Map();
