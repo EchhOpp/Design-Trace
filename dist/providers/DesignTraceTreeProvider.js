@@ -82,7 +82,7 @@ class DesignTraceTreeProvider {
             return Promise.resolve(this.buildRootNodes());
         }
         if (element.type === 'root') {
-            return Promise.resolve(this.buildRootNodes());
+            return Promise.resolve(element.children ?? []);
         }
         return Promise.resolve(element.children ?? []);
     }

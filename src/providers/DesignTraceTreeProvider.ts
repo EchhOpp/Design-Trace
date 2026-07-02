@@ -74,7 +74,7 @@ export class DesignTraceTreeProvider implements vscode.TreeDataProvider<TreeNode
     }
 
     if (element.type === 'root') {
-      return Promise.resolve(this.buildRootNodes());
+      return Promise.resolve(element.children ?? []);
     }
 
     return Promise.resolve(element.children ?? []);
