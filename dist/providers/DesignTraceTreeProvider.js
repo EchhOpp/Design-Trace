@@ -94,7 +94,6 @@ class DesignTraceTreeProvider {
                     label: 'No symbols indexed yet',
                     type: 'root',
                     icon: 'info',
-                    children: [],
                 }];
         }
         // Group by Markdown file

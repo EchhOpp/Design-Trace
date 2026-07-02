@@ -89,7 +89,6 @@ export class DesignTraceTreeProvider implements vscode.TreeDataProvider<TreeNode
         label: 'No symbols indexed yet',
         type: 'root',
         icon: 'info',
-        children: [],
       }];
     }
 
